@@ -43,21 +43,18 @@ while runLoop && frameCount < 4000
         % Detection mode.
         bbox = eyeDetector.step(videoFrameGray);
         
-        if ~isempty(bbox)
+        Eyes = imcrop(videoFrame, bbox);
+        %size(Eyes) %cropped image is 3D matrix; convert to BW 
+        EyesGray = rgb2gray(Eyes);
+        %size(EyesGrey) %cropped image is now grayscale; 2D matrix
         
-            Eyes = imcrop(videoFrame, bbox);
-            %size(Eyes) %cropped image is 3D matrix; convert to BW 
-            EyesGray = rgb2gray(Eyes);
-            BW2 = edge(EyesGray,'Canny');
-            BW1 = imfill(BW2,'holes');
-            %figure,
-            %imshow(BW1);
-            [centers, radii] = imfindcircles(BW1, [1, 4]);
-            viscircles(centers, radii);
-            %size(EyesGray) %cropped image is now grayscale; 2D matrix
-            %eyesClosed(EyesGray)
+        eyesClosed(EyesGray)
+        %I = imcrop(videoFrameGray, bbox);
+        %[m,n] = size(I);
         
-        end
+        %if m > 0 & n > 0
+        %    eyesClosed(I);
+        %end
               
         if ~isempty(bbox)
             % Find corner points inside the detected region.

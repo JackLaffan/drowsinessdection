@@ -14,14 +14,14 @@ circleCount = [0,0];
     
 
 viscircles(centers, radii);
-if ~isempty(centers)
+%if ~isempty(centers)
     %size(centers(:,1));
     %centers;
 
-   if size(centers(:,1)) > 1
-       closed = false;
+ %  if size(centers(:,1)) > 1
+  %     closed = false;
       
-   end
-end
+   %end
+%end
 end
 
