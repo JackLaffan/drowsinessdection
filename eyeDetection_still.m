@@ -1,68 +1,60 @@
-clear all
-clc
-%Detect objects using Viola-Jones Algorithm
+%Detects eyes using Viola-Jones Algorithm, eyes are cropped and a Canny
+%Edge Detector is applied to find the edge intensities. The holes are
+%filled and the Hough Transform is applied to find the pupils.
 
 %To detect Eyes
 EyeDetect = vision.CascadeObjectDetector('EyePairBig','MergeThreshold',16);
 
-%Read the input Image
-I = imread('closed.jpg');
-figure,
-imshow(I);
-I = rgb2gray(I);
+%Reads the input image and displays it
+I = imread('open1.jpg'); %Can be used for open or closed eye images
+figure; imshow(I); title('Original Image')
 
+I = rgb2gray(I); %Convert image to grayscale
+
+%Returns Bounding Box values based on number of objects
 BB=step(EyeDetect,I);
 
-%figure,
-%imshow(I); hold on
+%Draws a bounding box on the image and displays
+figure; imshow(I); hold on
 for i = 1:size(BB,1)
     rectangle('Position',BB(i,:),'LineWidth',4,'LineStyle','-','EdgeColor','b');
 end
 title('Eyes Detection');
+
+%Crops bounding box around eyes
 Eyes=imcrop(I,BB);
 
-figure,
-imshow(Eyes);
+figure; imshow(Eyes); title('Cropped Eye Region');
 
-eyesClosed(Eyes)
+%eyesClosed(Eyes) %unused function
 
-%BW = imbinarize(Eyes);
+%Canny Edge Detector applied
+edgeDetect = edge(Eyes,'Canny');
+figure; imshow(edgeDetect); title('Edge Detector')
 
-%BW1 = edge(Eyes,'Canny');
+%Circles filled
+circFill = imfill(edgeDetect,'holes');
+figure; imshow(circFill); title('Circle Fill')
 
-BW2 = edge(Eyes,'Canny');
 
-figure,
-imshow(BW2); 
-%se = strel('disk',2);
-BW1 = imfill(BW2,'holes');
-%BW3 = imclose(BW1,se);
-%imshowpair(Eyes,BW2,'montage')
-
-figure, imshow(BW1);
-
-%[centers, radii] = imfindcircles(BW1, [1, 4], 'ObjectPolarity','bright');
-[rows, columns, numberOfColorChannels]  = size(BW1);
-%viscircles(centers, radii, 'color', 'red');
+[rows, columns, numberOfColorChannels]  = size(circFill);
 %splits the image in two
 middle = int32(columns/2)
-leftHalf = BW1(:, 1:middle, :);
-rightHalf=BW1(:, middle+1:end, :);
-%middle = imsize(2)/2;
+leftHalf = circFill(:, 1:middle, :);
+rightHalf=circFill(:, middle+1:end, :);
 
-figure
-imshow(rightHalf);
+%Displays right eye, applies Hough Transform and draws circles on pupils
+figure; imshow(rightHalf); title('Right Eye')
 [rightCenters, radii] = imfindcircles(rightHalf, [1, 2]);
 viscircles(rightCenters, radii);
-figure
-imshow(leftHalf);
+
+%Displays left eye, applies Hough Transform and draws circles on pupils
+figure; imshow(leftHalf); title('Left Eye')
 [leftCenters, radii] = imfindcircles(leftHalf, [1, 4]);
-
-%centers
-%circleCount = [0,0]
-
 viscircles(leftCenters, radii);
 
+%Eyes are open if there is a circle in both the left and right eye 
+%else eyes are closed
 if ~isempty(rightCenters) && ~isempty(leftCenters)
     
     openEyes = 'Eyes are open';
@@ -74,6 +66,7 @@ if ~isempty(rightCenters) && ~isempty(leftCenters)
     fclose(fid);
     
 else
+    
     closedEyes = 'Eyes are closed';
     disp(closedEyes)
     

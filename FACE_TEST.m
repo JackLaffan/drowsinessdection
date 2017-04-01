@@ -25,14 +25,14 @@ videoPlayer = vision.VideoPlayer('Position', [100 100 [frameSize(2), frameSize(1
 
 %% Detection and Tracking
 % Capture and process video frames from the webcam in a loop to detect and
-% track a face. The loop will run for 4000 frames or until the video player
+% track a face. The loop will run for 3600 frames or until the video player
 % window is closed.
 
 runLoop = true;
 numPts = 0;
 frameCount = 0;
 
-while runLoop && frameCount < 4000
+while runLoop && frameCount < 3600
     
     % Get the next frame.
     videoFrame = snapshot(cam);
@@ -42,24 +42,21 @@ while runLoop && frameCount < 4000
     if numPts < 10
         % Detection mode.
         bbox = eyeDetector.step(videoFrameGray);
-        
+      
         if ~isempty(bbox)
-        
+            
             Eyes = imcrop(videoFrame, bbox);
             %size(Eyes) %cropped image is 3D matrix; convert to BW 
             EyesGray = rgb2gray(Eyes);
             BW2 = edge(EyesGray,'Canny');
             BW1 = imfill(BW2,'holes');
-            %figure,
-            %imshow(BW1);
             [centers, radii] = imfindcircles(BW1, [1, 4]);
+            figure; imshow(BW1); title('Cropped Eyes');
             viscircles(centers, radii);
             %size(EyesGray) %cropped image is now grayscale; 2D matrix
             %eyesClosed(EyesGray)
-        
-        end
-              
-        if ~isempty(bbox)
+            
+            
             % Find corner points inside the detected region.
             points = detectMinEigenFeatures(videoFrameGray, 'ROI', bbox(1, :));
        
