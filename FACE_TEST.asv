@@ -1,8 +1,8 @@
-% Detects eyes using the Viola Jones algorithm, eyes are cropped and a Canny
-% Edge Detector is applied to find the edge intensities. The holes are
-% filled and the Hough Transform is applied to find the pupils. The eyes
-% are tracked in a live video stream using the KLT algorithm.
+%% Face Detection and Tracking Using Live Video Acquisition
+% This example shows how to automatically detect and track a face in a live
+% video stream, using the KLT algorithm.   
 
+%% Setup
 % Create objects for detecting eyes, tracking points, acquiring and
 % displaying video frames.
 
@@ -22,6 +22,7 @@ frameSize = size(videoFrame);
 % Create the video player object. 
 videoPlayer = vision.VideoPlayer('Position', [100 100 [frameSize(2), frameSize(1)]+30]);
 
+%% Detection and Tracking
 % Capture and process video frames from the webcam in a loop to detect and
 % track a face. The loop will run for 3600 frames (2 mins) or until the video 
 % player window is closed.
