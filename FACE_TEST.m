@@ -30,7 +30,7 @@ runLoop = true;
 numPts = 0;
 frameCount = 0;
 
-while runLoop && frameCount < 3600
+while runLoop && frameCount < 10000
     
     % Get the next frame.
     videoFrame = snapshot(cam);
